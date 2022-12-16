@@ -22,6 +22,7 @@
     "strong-type": "^1.0.1"
   },
   "devDependencies": {
+    "@types/node": "^18.11.15",
     "c8": "^7.7.3",
     "esbuild": "^0.12.28",
     "lcov2badge": "^0.1.2",

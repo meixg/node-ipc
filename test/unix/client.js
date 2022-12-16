@@ -1,12 +1,10 @@
 import VanillaTest from 'vanilla-test';
-import Is from 'strong-type';
 import IPCModule from '../../src/IPC.js';
 import delay from '../delay.js';
 
 async function run(){
 
     const test=new VanillaTest;
-    const is=new Is;
 
     const cleanup=function(){
         test.pass();
