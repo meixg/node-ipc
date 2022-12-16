@@ -1,4 +1,4 @@
-import IPC from './services/IPC.js';
+import IPC from './src/IPC.js';
 
 class IPCModule extends IPC{
     constructor(){
