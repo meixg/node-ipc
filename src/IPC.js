@@ -1,4 +1,3 @@
-
 import Defaults from './entities/Defaults.js';
 import Client from './dao/client.js';
 import Server from './dao/socketServer.js';
@@ -15,14 +14,99 @@ class IPC{
     server=false;
 
     //protected methods
-    get connectTo(){
-        return connect;
+    connectTo(id, path, callback){
+        if(typeof path == 'function'){
+            callback=path;
+            path=false;
+        }
+
+        if(!callback){
+            callback=emptyCallback;
+        }
+
+        if(!id){
+            this.log(
+                'Service id required',
+                'Requested service connection without specifying service id. Aborting connection attempt'
+            );
+            return;
+        }
+
+        if(!path){
+            this.log(
+                'Service path not specified, so defaulting to',
+                'ipc.config.socketRoot + ipc.config.appspace + id',
+                (this.config.socketRoot+this.config.appspace+id).data
+            );
+            path=this.config.socketRoot+this.config.appspace+id;
+        }
+
+        if(this.of[id]){
+            if(!this.of[id].socket.destroyed){
+                this.log(
+                    'Already Connected to',
+                    id,
+                    '- So executing success without connection'
+                );
+                callback();
+                return;
+            }
+            this.of[id].socket.destroy();
+        }
+
+        this.of[id] = new Client(this.config,this.log);
+        this.of[id].id = id;
+        (this.of[id].socket)? (this.of[id].socket.id=id):null;
+        this.of[id].path = path;
+
+        this.of[id].connect();
+
+        callback(this);
     }
-    get disconnect(){
-        return disconnect
+    disconnect(id){
+        if(!this.of[id]){
+            return;
+        }
+
+        this.of[id].explicitlyDisconnected=true;
+
+        this.of[id].off('*','*');
+        if(this.of[id].socket){
+            if(this.of[id].socket.destroy){
+                this.of[id].socket.destroy();
+            }
+        }
+
+        delete this.of[id];
     }
-    get serve(){
-        return serve;
+    serve(path, callback){
+        if(typeof path=='function'){
+            callback=path;
+            path=false;
+        }
+        if(!path){
+            this.log(
+                'Server path not specified, so defaulting to',
+                'ipc.config.socketRoot + ipc.config.appspace + ipc.config.id',
+                this.config.socketRoot+this.config.appspace+this.config.id
+            );
+            path=this.config.socketRoot+this.config.appspace+this.config.id;
+        }
+
+        if(!callback){
+            callback=emptyCallback;
+        }
+
+        this.server=new Server(
+            path,
+            this.config,
+            log
+        );
+
+        this.server.on(
+            'start',
+            callback
+        );
     }
     get log(){
         return log;
@@ -55,105 +139,8 @@ function log(...args){
     );
 }
 
-function disconnect(id){
-    if(!this.of[id]){
-        return;
-    }
-
-    this.of[id].explicitlyDisconnected=true;
-
-    this.of[id].off('*','*');
-    if(this.of[id].socket){
-        if(this.of[id].socket.destroy){
-            this.of[id].socket.destroy();
-        }
-    }
-
-    delete this.of[id];
-}
-
-function serve(path,callback){
-    if(typeof path=='function'){
-        callback=path;
-        path=false;
-    }
-    if(!path){
-        this.log(
-            'Server path not specified, so defaulting to',
-            'ipc.config.socketRoot + ipc.config.appspace + ipc.config.id',
-            this.config.socketRoot+this.config.appspace+this.config.id
-        );
-        path=this.config.socketRoot+this.config.appspace+this.config.id;
-    }
-
-    if(!callback){
-        callback=emptyCallback;
-    }
-
-    this.server=new Server(
-        path,
-        this.config,
-        log
-    );
-
-    this.server.on(
-        'start',
-        callback
-    );
-}
-
 function emptyCallback(){
     //Do Nothing
-}
-
-function connect(id,path,callback){
-    if(typeof path == 'function'){
-        callback=path;
-        path=false;
-    }
-
-    if(!callback){
-        callback=emptyCallback;
-    }
-
-    if(!id){
-        this.log(
-            'Service id required',
-            'Requested service connection without specifying service id. Aborting connection attempt'
-        );
-        return;
-    }
-
-    if(!path){
-        this.log(
-            'Service path not specified, so defaulting to',
-            'ipc.config.socketRoot + ipc.config.appspace + id',
-            (this.config.socketRoot+this.config.appspace+id).data
-        );
-        path=this.config.socketRoot+this.config.appspace+id;
-    }
-
-    if(this.of[id]){
-        if(!this.of[id].socket.destroyed){
-            this.log(
-                'Already Connected to',
-                id,
-                '- So executing success without connection'
-            );
-            callback();
-            return;
-        }
-        this.of[id].socket.destroy();
-    }
-
-    this.of[id] = new Client(this.config,this.log);
-    this.of[id].id = id;
-    (this.of[id].socket)? (this.of[id].socket.id=id):null;
-    this.of[id].path = path;
-
-    this.of[id].connect();
-
-    callback(this);
 }
 
 export {

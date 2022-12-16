@@ -1,6 +1,6 @@
 import VanillaTest from 'vanilla-test';
 import Is from 'strong-type';
-import {IPCModule}   from '../../node-ipc';
+import IPCModule from '../../src/IPC.js';
 import delay from '../delay.js';
 
 async function run(){

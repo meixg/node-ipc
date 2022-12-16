@@ -1,6 +1,7 @@
-import ipc from '../../node-ipc.js';
+import IPCModule from '../../src/IPC.js';
 import process from 'process';
 
+const ipc = new IPCModule();
 const dieAfter=30e3;
 
 function killServerProcess(){

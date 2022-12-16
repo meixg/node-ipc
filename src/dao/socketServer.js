@@ -1,8 +1,6 @@
 
 import net from 'net';
-import tls from 'tls';
 import fs from 'fs';
-import dgram from 'dgram';
 import EventParser from '../entities/EventParser.js';
 import Message from 'js-message';
 import Events from 'event-pubsub';
