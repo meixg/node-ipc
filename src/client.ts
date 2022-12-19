@@ -52,8 +52,7 @@ export class Client extends EventEmitter {
         // client.log('requested connection to ', client.id, client.path);
 
         if (!this.config.path) {
-            this.log('\n\n######\nerror: ', this.config.id, ' client has not specified socket path it wishes to connect to.');
-            return Promise.reject();
+            return Promise.reject('error: ' + this.config.id + ' client has not specified socket path it wishes to connect to.');
         }
 
         const options = {
@@ -67,10 +66,11 @@ export class Client extends EventEmitter {
 
             this.socket.on(
                 'error',
+                /* c8 ignore start */
                 err => {
-                    this.log('\n\n######\nerror: ', err);
                     reject(err);
                 }
+                /* c8 ignore stop */
             );
 
             this.socket.on(

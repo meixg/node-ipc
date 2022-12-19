@@ -23,36 +23,50 @@ test('normal connect', async (t) => {
     });
     await client.connect();
 
-    await t.test('client send and receive', async () => {
+    await Promise.all([
+        t.test('client send and receive', async () => {
 
-        let serverID = '';
-        let serverMessage = '';
+            let serverID = '';
+            let serverMessage = '';
 
-        const expectedServerID = 'unixServer';
-        const expectedMessage = 'I am unix server!';
+            const expectedServerID = 'unixServer';
+            const expectedMessage = 'I am unix server!';
 
 
-        client.on(
-            'message',
-            function gotMessage(data) {
-                serverID = data.id
-                serverMessage = data.message
+            client.on(
+                'message',
+                function gotMessage(data) {
+                    serverID = data.id
+                    serverMessage = data.message
+                }
+            );
+
+            client.send(
+                'message',
+                {
+                    id: 'testClient',
+                    message: 'Hello from Client.'
+                }
+            );
+
+            await delay(transmit_delay);
+
+            assert.deepEqual(serverID, expectedServerID);
+            assert.deepEqual(serverMessage, expectedMessage);
+        }),
+        t.test('client with no path', async () => {
+            const client = new Client({
+                path: undefined
+            });
+            try {
+                await client.connect();
+                assert.fail('should throw error');
             }
-        );
-
-        client.send(
-            'message',
-            {
-                id: 'testClient',
-                message: 'Hello from Client.'
+            catch {
+                assert(true);
             }
-        );
-
-        await delay(transmit_delay);
-
-        assert.deepEqual(serverID, expectedServerID);
-        assert.deepEqual(serverMessage, expectedMessage);
-    })
+        }) 
+    ]);
 
     client.send(
         'END'
