@@ -1,5 +1,5 @@
-import lcov2badge from 'lcov2badge';
-import {writeFileSync} from 'fs';
+const lcov2badge = require('lcov2badge');
+const {writeFileSync} = require('fs');
 
 lcov2badge.badge(
     './coverage/lcov.info', 

@@ -25,29 +25,3 @@ export function getServerDefaultConfig(): ServerConfig {
         maxConnections: 100,
     };
 }
-
-class Defaults{
-
-    constructor(){
-
-    }
-
-    encoding='utf8';
-    rawBuffer=false;
-    unlink=true;
-
-
-
-    maxConnections=100;
-    retry=500;
-    maxRetries=Infinity;
-    stopRetrying=false;
-
-    readableAll = false;
-    writableAll = false;
-}
-
-export {
-    Defaults as default,
-    Defaults
-}

@@ -6,7 +6,6 @@ async function delay(ms=100) {
     );
 }
 
-export {
-    delay as default,
+module.exports = {
     delay
-}
+};
