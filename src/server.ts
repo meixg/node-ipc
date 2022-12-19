@@ -30,6 +30,7 @@ export class Server extends EventEmitter {
 
     stop() {
         this.server && this.server.close();
+        // fs.unlinkSync(this.config.path);
     }
 
     start(): Promise<Server> {
@@ -104,7 +105,7 @@ export class Server extends EventEmitter {
         for (const event of events) {
             try {
                 const message = parseMessage(event);
-                this.emit(message.type, message.data);
+                this.emit(message.type, message.data, socket);
             }
             catch (e) {
                 this.log('Invalid JSON message format', e);

@@ -1,33 +1,36 @@
-import ipc from '../../node-ipc.js';
+const {Server} = require('../dist/server');
 
-/***************************************\
- *
- * You should start both hello and world
- * then you will see them communicating.
- *
- * *************************************/
+const server = new Server({});
 
-ipc.config.id = 'world';
-ipc.config.retry= 1500;
+process.on('exit', () => {
+    server.stop();
+});
 
-ipc.serve(
-    function(){
-        ipc.server.on(
-            'app.message',
-            function(data,socket){
-                ipc.server.emit(
-                    socket,
-                    'app.message',
-                    {
-                        id      : ipc.config.id,
-                        message : data.message+' world!'
-                    }
-                );
-            }
-        );
-    }
-);
+//catches ctrl+c event
+process.on('SIGINT', () => {
+    process.exit();
+});
 
+// catches "kill pid" (for example: nodemon restart)
+process.on('SIGUSR1', () => {
+    process.exit();
+});
+process.on('SIGUSR2', () => {
+    process.exit();
+});
 
+//catches uncaught exceptions
+process.on('uncaughtException', () => {
+    process.exit();
+});
 
-ipc.server.start();
+(async () => {
+    await server.start();
+    server.on('app.message', (data, socket) => {
+        console.log('server received: ', data);
+
+        server.send(socket, 'app.message', {
+            message: data.message + ' world!'
+        });
+    });
+})();

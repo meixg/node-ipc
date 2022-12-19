@@ -2,25 +2,14 @@
   "name": "node-ipc",
   "version": "10.1.0",
   "description": "A nodejs module for local and remote Inter Process Communication (IPC), Neural Networking, and able to facilitate machine learning.",
-  "type": "module",
-  "main": "node-ipc.cjs",
-  "module": "node-ipc.js",
-  "exports": {
-    "import": "./node-ipc.js",
-    "require": "./node-ipc.cjs"
-  },
+  "main": "dist/index.js",
   "directories": {
     "example": "example"
   },
   "engines": {
     "node": ">=14"
   },
-  "dependencies": {
-    "event-pubsub": "5.0.3",
-    "js-message": "1.0.7",
-    "js-queue": "2.0.2",
-    "strong-type": "^1.0.1"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@types/node": "^18.11.15",
     "c8": "^7.7.3",
@@ -31,6 +20,8 @@
     "vanilla-test": "^1.4.8"
   },
   "scripts": {
+    "build": "tsc",
+    "esbuild": "esbuild `find src -name '*.ts'` --sourcemap --platform=node --target=node14 --format=cjs --outdir=dist",
     "prepare": "esbuild node-ipc.js --bundle --format=cjs --target=es2018 --platform=node --outfile=node-ipc.cjs",
     "test": "c8 -r lcov -r html node test/CI.js && c8 report && node ./lcov.js",
     "coverage": "echo 'See your coverage report at http://localhost:8080' && node-http-server port=8080 root=./coverage/"

@@ -43,6 +43,10 @@ export class Client extends EventEmitter {
         return;
     }
 
+    stop() {
+        this.socket && this.socket.destroy();
+    }
+
     connect(): Promise<Client>{
         //init client object for scope persistance especially inside of socket events.
         // client.log('requested connection to ', client.id, client.path);
